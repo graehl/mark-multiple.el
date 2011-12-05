@@ -50,8 +50,7 @@
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark next."
   (interactive "p")
-  (if (not (region-active-p))
-      (error "Mark a region to match first."))
+  (ensure-region)
   (if (< arg 0)
       (mm/remove-mirror (mm/furthest-mirror-after-master)))
   (if (>= arg 0)
@@ -73,8 +72,7 @@ With zero ARG, skip the last one and mark next."
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark previous."
   (interactive "p")
-  (if (not (region-active-p))
-      (error "Mark a region to match first."))
+  (ensure-region)
   (if (< arg 0)
       (mm/remove-mirror (mm/furthest-mirror-before-master)))
   (if (>= arg 0)
@@ -91,12 +89,33 @@ With zero ARG, skip the last one and mark previous."
             (search-backward (mm/master-substring)))
           (mm/add-mirror (point) (+ (point) length))))))
 
+(defun ensure-region (&optional arg) ""
+  (region-from-match)
+  (assert-region arg))
+
+(defun assert-region (&optional msg)
+  ""
+  (if (not (region-active-p))
+      (error (if (eq msg nil) "Mark a region (or match) first." msg))))
+
+(defun set-region (beg end)
+  (when (and (numberp beg) (numberp end))
+    (goto-char beg)
+    (push-mark)
+    (set-mark (point))
+    (goto-char end)))
+
+(defun region-from-match ()
+"set region from current match if there is one (but only if there's no region already)"
+(interactive)
+(when (not (region-active-p))
+  (set-region (match-beginning 0) (match-end 0))))
+
 (defun mark-more-like-this (arg)
   "Marks next part of buffer that matches the currently active region ARG times.
 Given a negative ARG it searches backwards instead."
   (interactive "p")
-  (if (not (region-active-p))
-      (error "Mark a region to match first."))
+  (ensure-region)
   (let ((start (region-beginning))
         (end (region-end)))
     (if (> arg 0)
