@@ -106,10 +106,10 @@ With zero ARG, skip the last one and mark previous."
     (goto-char end)))
 
 (defun region-from-match ()
-"set region from current match if there is one (but only if there's no region already)"
-(interactive)
-(when (not (region-active-p))
-  (set-region (match-beginning 0) (match-end 0))))
+  "set region from current match if there is one (but only if there's no region already)"
+  (interactive)
+  (when (not (region-active-p))
+    (set-region (match-beginning 0) (match-end 0))))
 
 (defun mark-more-like-this (arg)
   "Marks next part of buffer that matches the currently active region ARG times.
