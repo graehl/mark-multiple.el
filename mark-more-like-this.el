@@ -91,7 +91,15 @@ With zero ARG, skip the last one and mark previous."
 
 (defun ensure-region (&optional arg) ""
   (region-from-match)
+  (region-from-point)
   (assert-region arg))
+
+(defun region-from-point ()
+  "set region to char under point if it's not whitespace (but only if there's no region already)"
+  (interactive)
+  (let ((p (point)))
+    (when (and (not (region-active-p)) (not (eq ?  (char-after p))))
+      (set-region p (+ 1 p)))))
 
 (defun assert-region (&optional msg)
   ""
